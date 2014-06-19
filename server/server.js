@@ -131,5 +131,21 @@ app.post('/users/:id/answers', function(req, res) {
     res.send({answers_dump_test: session.answers});
 });
 
+app.get('/slide/:id/results', function(req, res) {
+	var slideId = req.params.id;
+	console.log("Slide ID: " + slideId);
+	var answers = session.answers[slideId];
+
+	if (answers && answers.length == 2) {
+		//Return the answers
+	} else {
+		console.log("Everyone hasn't answered yet on slide: " + slideId);
+		res.send({
+			results: null
+		});
+	}
+
+});
+
 app.listen(3000);
 console.log('Listening on port 3000...');
