@@ -83,16 +83,27 @@ var getActiveSlide = function() {
 };
 
 var getSlideById = function(slideId) {
+    var result = null;
     session.slides.forEach(function(item) {
         if(item.id == slideId) {
-            return item;
+            result = item;
         }
     });
+    return result;
 };
 
 var moveToNextSlide = function() {
     session.slidesCompleted++;
+    console.log("Moving to next slide!")
 };
+
+var getAnswerCountForSlideById = function(slideId) {
+    console.log("getAnswerCount slide id: " + slideId);
+    var slide = getSlideById(slideId);
+    console.log("getAnswerCount slide: " + JSON.stringify(slide));
+    var answerCount = Object.keys(session.answers[slide.position]).length;
+    return answerCount;
+}
 
 app.get('/reset', function(req, res) {
     resetSession();
@@ -141,11 +152,14 @@ app.post('/users/:id/answers', function(req, res) {
     console.log("Slide: " + JSON.stringify(slide));
     console.log("Submitted answers: " + JSON.stringify(userAnswers));
     console.log("Answers: " + JSON.stringify(session.answers));
-    res.send({answers_dump_test: session.answers});
 
-    if(session.answers[slide.position].length >= 2) {
+    var answerCount = getAnswerCountForSlideById(slide.id);
+    console.log("Answer count for this: " + answerCount);
+    if(answerCount >= 2) {
         moveToNextSlide();
     }
+
+    res.send({result: 'ok'});
 });
 
 app.get('/slide/:id/results', function(req, res) {
