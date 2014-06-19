@@ -99,12 +99,16 @@ var moveToNextSlide = function() {
 };
 
 var getAnswerCountForSlideById = function(slideId) {
-    console.log("getAnswerCount slide id: " + slideId);
+    //console.log("getAnswerCount slide id: " + slideId);
     var slide = getSlideById(slideId);
-    console.log("getAnswerCount slide: " + JSON.stringify(slide));
-    var answerCount = Object.keys(session.answers[slide.position]).length;
-    return answerCount;
-}
+    //console.log("getAnswerCount slide: " + JSON.stringify(slide));
+    if(session.answers[slide.position]) {
+        var answerCount = Object.keys(session.answers[slide.position]).length;
+        return answerCount;
+    } else {
+        return 0;
+    }
+};
 
 app.get('/reset', function(req, res) {
     resetSession();
@@ -143,16 +147,16 @@ app.post('/users/:id/answers', function(req, res) {
     var userid = req.params.id;
     var userAnswers = req.body.answers;
     var slide = getActiveSlide();
-    console.log(userid);
+
     if(!session.answers[slide.position]) {
         session.answers[slide.position] = {};
     }
     session.answers[slide.position][userid] = userAnswers;
 
-    console.log("UserId: " + userid);
-    console.log("Slide: " + JSON.stringify(slide));
-    console.log("Submitted answers: " + JSON.stringify(userAnswers));
-    console.log("Answers: " + JSON.stringify(session.answers));
+    //console.log("UserId: " + userid);
+    //console.log("Slide: " + JSON.stringify(slide));
+    //console.log("Submitted answers: " + JSON.stringify(userAnswers));
+    //console.log("Answers: " + JSON.stringify(session.answers));
 
     var answerCount = getAnswerCountForSlideById(slide.id);
     console.log("Answer count for this: " + answerCount);
@@ -165,16 +169,25 @@ app.post('/users/:id/answers', function(req, res) {
 
 app.get('/slide/:id/results', function(req, res) {
 	var slideId = req.params.id;
-	console.log("Slide ID: " + slideId);
+	//console.log("Slide ID: " + slideId);
     var position = getSlideById(slideId).position;
-    console.log("Position: " + position);
+    //console.log("Position: " + position);
 	var answers = session.answers[position];
     var answerCount = getAnswerCountForSlideById(slideId);
 	if (answerCount >= 2) {
 		//Return the answers
-        console.log("Answers at this position: " + JSON.stringify(answers));
+        //console.log("Answers at this position: " + JSON.stringify(answers));
         answers['0'].correct = answers['0']['1'] == answers['1']['1'];
         answers['1'].correct = answers['1']['0'] == answers['0']['0'];
+
+        var user0 = session.users[0];
+        var correctstr = answers['0'].correct ? " was correct!" : " was not correct!";
+        console.log(user0.name + correctstr);
+
+        var user1 = session.users[0];
+        correctstr = answers['1'].correct ? " was correct!" : " was not correct!";
+        console.log(user1.name + correctstr);
+
         res.send({
             answers: answers
         });
