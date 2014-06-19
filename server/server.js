@@ -12,12 +12,13 @@ var resetSession = function() {
         },
         slidesCompleted: 0,
         users: [],
-        answers: []
+        answers: {}
     };
 };
 resetSession();
 
 var traitify = require("traitify");
+
 // live url
 //traitify.setHost("api.traitify.com");
 
@@ -115,16 +116,19 @@ app.get('/slide', function(req, res) {
 });
 app.post('/users/:id/answers', function(req, res) {
     var userid = req.params.id;
-    console.log(userid);
+    var userAnswers = req.body.answers;
     var slide = getActiveSlide();
-    if(!session.answers[slide.id]) {
-        session.answers[slide.id] = [];
+    console.log(userid);
+    if(!session.answers[slide.position]) {
+        session.answers[slide.position] = {};
     }
+    session.answers[slide.position][userid] = userAnswers;
 
-    session.answers[slide.id][userid] = req.body.answers;
-
+    console.log("UserId: " + userid);
+    console.log("Slide: " + JSON.stringify(slide));
+    console.log("Submitted answers: " + JSON.stringify(userAnswers));
     console.log("Answers: " + JSON.stringify(session.answers));
-    res.send({result: 'ok'});
+    res.send({answers_dump_test: session.answers});
 });
 
 app.listen(3000);
