@@ -62,6 +62,7 @@ getSlidesFromTraitify = function() {
 };
 
 var resetSession = function() {
+    idSequence = 0;
     session = {
         assessment: { id: '87a05a80-7410-4028-aa67-62e1faee36a6',
             deck_id: 'f5bc482e-8a2a-45c1-a7d4-8574625396b9',
@@ -165,11 +166,18 @@ app.post('/users/:id/answers', function(req, res) {
 app.get('/slide/:id/results', function(req, res) {
 	var slideId = req.params.id;
 	console.log("Slide ID: " + slideId);
-    var position = getSlideById(slideId);
+    var position = getSlideById(slideId).position;
+    console.log("Position: " + position);
 	var answers = session.answers[position];
-
-	if (answers && answers.length == 2) {
+    var answerCount = getAnswerCountForSlideById(slideId);
+	if (answerCount >= 2) {
 		//Return the answers
+        console.log("Answers at this position: " + JSON.stringify(answers));
+        answers['0'].correct = answers['0']['1'] == answers['1']['1'];
+        answers['1'].correct = answers['1']['0'] == answers['0']['0'];
+        res.send({
+            answers: answers
+        });
 	} else {
 		console.log("Everyone hasn't answered yet on slide: " + slideId);
 		res.send({
