@@ -83,6 +83,14 @@ var getActiveSlide = function() {
     return session.slides[position];
 };
 
+var getSlideById = function(slideId) {
+    session.slides.forEach(function(item) {
+        if(item.id == slideId) {
+            return item;
+        }
+    });
+};
+
 app.get('/reset', function(req, res) {
     resetSession();
 
@@ -126,6 +134,8 @@ app.post('/users/:id/answers', function(req, res) {
     }
     session.answers[slide.position][userid] = userAnswers;
 
+
+
     console.log("UserId: " + userid);
     console.log("Slide: " + JSON.stringify(slide));
     console.log("Submitted answers: " + JSON.stringify(userAnswers));
@@ -136,7 +146,8 @@ app.post('/users/:id/answers', function(req, res) {
 app.get('/slide/:id/results', function(req, res) {
 	var slideId = req.params.id;
 	console.log("Slide ID: " + slideId);
-	var answers = session.answers[slideId];
+    var position = getSlideById(slideId);
+	var answers = session.answers[position];
 
 	if (answers && answers.length == 2) {
 		//Return the answers
