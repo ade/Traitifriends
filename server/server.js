@@ -14,6 +14,8 @@ var resetSession = function() {
         users: [],
         answers: {}
     };
+
+    getSlidesFromTraitify();
 };
 resetSession();
 
