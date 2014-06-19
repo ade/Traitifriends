@@ -3,21 +3,6 @@ var app = express();
 var idSequence = 0;
 
 var session;
-var resetSession = function() {
-    session = {
-        assessment: { id: '87a05a80-7410-4028-aa67-62e1faee36a6',
-            deck_id: 'f5bc482e-8a2a-45c1-a7d4-8574625396b9',
-            completed_at: null,
-            created_at: 1403146483844
-        },
-        slidesCompleted: 0,
-        users: [],
-        answers: {}
-    };
-
-    getSlidesFromTraitify();
-};
-resetSession();
 
 var traitify = require("traitify");
 
@@ -55,7 +40,7 @@ traitify.createAssessment("f5bc482e-8a2a-45c1-a7d4-8574625396b9", function(asses
 */
 
 
-var getSlidesFromTraitify = function() {
+getSlidesFromTraitify = function() {
     traitify.getSlides(session.assessment.id, function(slides){
         session.slides = slides;
         console.log(slides);
@@ -76,7 +61,21 @@ var getSlidesFromTraitify = function() {
     });
 };
 
-getSlidesFromTraitify();
+var resetSession = function() {
+    session = {
+        assessment: { id: '87a05a80-7410-4028-aa67-62e1faee36a6',
+            deck_id: 'f5bc482e-8a2a-45c1-a7d4-8574625396b9',
+            completed_at: null,
+            created_at: 1403146483844
+        },
+        slidesCompleted: 0,
+        users: [],
+        answers: {}
+    };
+
+    getSlidesFromTraitify();
+};
+resetSession();
 
 var getActiveSlide = function() {
     var position = Math.min(session.slidesCompleted, session.slides.length);
