@@ -91,6 +91,10 @@ var getSlideById = function(slideId) {
     });
 };
 
+var moveToNextSlide = function() {
+    session.slidesCompleted++;
+};
+
 app.get('/reset', function(req, res) {
     resetSession();
 
@@ -134,13 +138,15 @@ app.post('/users/:id/answers', function(req, res) {
     }
     session.answers[slide.position][userid] = userAnswers;
 
-
-
     console.log("UserId: " + userid);
     console.log("Slide: " + JSON.stringify(slide));
     console.log("Submitted answers: " + JSON.stringify(userAnswers));
     console.log("Answers: " + JSON.stringify(session.answers));
     res.send({answers_dump_test: session.answers});
+
+    if(session.answers[slide.position].length >= 2) {
+        moveToNextSlide();
+    }
 });
 
 app.get('/slide/:id/results', function(req, res) {
